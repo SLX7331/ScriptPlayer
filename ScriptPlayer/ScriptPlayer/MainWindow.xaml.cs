@@ -71,6 +71,7 @@ namespace ScriptPlayer
             ViewModel.RequestToggleFullscreen += ViewModelOnRequestToggleFullscreen;
             ViewModel.RequestSetFullscreen += ViewModelOnRequestSetFullscreen;
             ViewModel.RequestButtplugUrl += ViewModelOnRequestButtplugUrl;
+            ViewModel.RequestOsrConnectionSettings += ViewModelOnRequestOsrConnectionSettings;
             ViewModel.RequestVlcConnectionSettings += ViewModelOnRequestVlcConnectionSettings;
             ViewModel.RequestZoomPlayerConnectionSettings += ViewModelOnRequestZoomPlayerConnectionSettings;
             ViewModel.RequestWhirligigConnectionSettings += ViewModelOnRequestWhirligigConnectionSettings;
@@ -390,6 +391,19 @@ namespace ScriptPlayer
             {
                 IpAndPort = dialog.IpAndPort,
                 Password = dialog.Password
+            };
+        }
+
+        private void ViewModelOnRequestOsrConnectionSettings(object sender, RequestEventArgs<OsrConnectionSettings> args)
+        {
+            OsrConnectionSettingsDialog dialog = new OsrConnectionSettingsDialog(args.Value.ComPort, args.Value.BaudRate) { Owner = this };
+            if (dialog.ShowDialog() != true) return;
+
+            args.Handled = true;
+            args.Value = new OsrConnectionSettings
+            {
+                ComPort = dialog.ComPort,
+                BaudRate = dialog.BaudRate
             };
         }
 

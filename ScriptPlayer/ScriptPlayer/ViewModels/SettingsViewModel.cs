@@ -20,6 +20,8 @@ namespace ScriptPlayer.ViewModels
         private string _vlcPassword;
         private string _whirligigEndpoint;
         private string _buttplugUrl;
+        private string _osrComPort;
+        private string _osrBaudRate;
 
         private ObservableCollection<string> _additionalPaths = new ObservableCollection<string>();
 
@@ -545,6 +547,28 @@ namespace ScriptPlayer.ViewModels
             {
                 if (value == _buttplugExePath) return;
                 _buttplugExePath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string OsrComPort
+        {
+            get => _osrComPort;
+            set
+            {
+                if (value == _osrComPort) return;
+                _osrComPort = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string OsrBaudRate
+        {
+            get => _osrBaudRate;
+            set
+            {
+                if (value == _osrBaudRate) return;
+                _osrBaudRate = value;
                 OnPropertyChanged();
             }
         }

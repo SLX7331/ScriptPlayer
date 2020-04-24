@@ -1,5 +1,6 @@
 ﻿using FMUtils.KeyboardHook;
 using JetBrains.Annotations;
+using ScriptPlayer.Dialogs;
 using ScriptPlayer.Shared;
 using ScriptPlayer.Shared.Classes;
 using ScriptPlayer.Shared.Helpers;
@@ -29,6 +30,7 @@ namespace ScriptPlayer.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged, IDisposable
     {
+        public event EventHandler<RequestEventArgs<OsrConnectionSettings>> RequestOsrConnectionSettings;
         public event EventHandler<RequestEventArgs<VlcConnectionSettings>> RequestVlcConnectionSettings;
         public event EventHandler<RequestEventArgs<WhirligigConnectionSettings>> RequestWhirligigConnectionSettings;
         public event EventHandler<RequestEventArgs<MpcConnectionSettings>> RequestMpcConnectionSettings;
@@ -249,6 +251,7 @@ namespace ScriptPlayer.ViewModels
         private string _scriptPlayerVersion;
         private bool _blurVideo;
         private bool _canDirectConnectLaunch;
+        private bool _canDirectConnectOsr;
         private SettingsViewModel _settings;
         private string _loadedScript;
         private string _loadedVideo;
@@ -344,6 +347,17 @@ namespace ScriptPlayer.ViewModels
             }
         }
 
+        public bool CanDirectConnectOsr
+        {
+            get => _canDirectConnectOsr;
+            private set
+            {
+                if (value == _canDirectConnectOsr) return;
+                _canDirectConnectOsr = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainViewModel()
         {
             // Can get rather intense even for low values, keep it at 1 for now (Ffmpeg is multi-threaded anyways)
@@ -369,6 +383,8 @@ namespace ScriptPlayer.ViewModels
                 // Only initialize LaunchFinder on Win10 15063+
                 InitializeLaunchFinder();
             }
+
+            InitializeOsrFinder();
 
             InitializeScriptHandler();
             GeneratePatterns();
@@ -876,6 +892,16 @@ namespace ScriptPlayer.ViewModels
         {
             RequestEventArgs<VlcConnectionSettings> args = new RequestEventArgs<VlcConnectionSettings>(currentSettings);
             RequestVlcConnectionSettings?.Invoke(this, args);
+
+            if (!args.Handled)
+                return null;
+            return args.Value;
+        }
+
+        private OsrConnectionSettings OnRequestOsrConnectionSettings(OsrConnectionSettings currentSettings)
+        {
+            RequestEventArgs<OsrConnectionSettings> args = new RequestEventArgs<OsrConnectionSettings>(currentSettings);
+            RequestOsrConnectionSettings?.Invoke(this, args);
 
             if (!args.Handled)
                 return null;
@@ -1519,6 +1545,8 @@ namespace ScriptPlayer.ViewModels
         public ScriptplayerCommand ToggleFullScreenCommand { get; set; }
 
         public ScriptplayerCommand ConnectLaunchDirectlyCommand { get; set; }
+
+        public ScriptplayerCommand ConnectOsrDirectlyCommand { get; set; }
 
         public ScriptplayerCommand AddScriptsToPlaylistCommand { get; set; }
 
@@ -2428,6 +2456,12 @@ namespace ScriptPlayer.ViewModels
                 DisplayText = "Connect Launch Directly"
             };
 
+            ConnectOsrDirectlyCommand = new ScriptplayerCommand(ConnectOsrDirectly)
+            {
+                CommandId = "ConnectOsrDirectly",
+                DisplayText = "Connect OSR Directly"
+            };
+
             ConnectButtplugCommand = new ScriptplayerCommand(ConnectButtplug)
             {
                 CommandId = "ConnectButtplug",
@@ -2498,6 +2532,7 @@ namespace ScriptPlayer.ViewModels
             GlobalCommandManager.RegisterCommand(OpenVideoCommand);
             GlobalCommandManager.RegisterCommand(AddScriptsToPlaylistCommand);
             GlobalCommandManager.RegisterCommand(ConnectLaunchDirectlyCommand);
+            GlobalCommandManager.RegisterCommand(ConnectOsrDirectlyCommand);
             GlobalCommandManager.RegisterCommand(ConnectButtplugCommand);
             GlobalCommandManager.RegisterCommand(DisconnectButtplugCommand);
             GlobalCommandManager.RegisterCommand(StartScanningButtplugCommand);
@@ -3115,6 +3150,17 @@ namespace ScriptPlayer.ViewModels
             launchController.DeviceFound += DeviceController_DeviceFound;
             _controllers.Add(launchController);
             CanDirectConnectLaunch = true;
+        }
+
+        private void InitializeOsrFinder()
+        {
+            OsrSerial osrController = _controllers.OfType<OsrSerial>().FirstOrDefault();
+            if (osrController != null) return;
+
+            osrController = new OsrSerial();
+            osrController.DeviceFound += DeviceController_DeviceFound;
+            _controllers.Add(osrController);
+            CanDirectConnectOsr = true;
         }
 
         private void CheckForArguments()
@@ -4387,6 +4433,37 @@ namespace ScriptPlayer.ViewModels
             }
 
             LaunchBluetooth controller = _controllers.OfType<LaunchBluetooth>().Single();
+            controller.Start();
+        }
+
+        public void ConnectOsrDirectly()
+        {
+            if (OsrSerial.IsOsrPaired())
+            {
+                MessageBox.Show(
+                    "It appears that you have paired your OSR. Since the OSR is a Serial-device, you don't have to pair it to use it - in fact it will probably not work if you do. Unpair your Osr and try again.",
+                    "OSR paired", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            //if (string.IsNullOrWhiteSpace(Settings.OsrComPort) || string.IsNullOrWhiteSpace(Settings.OsrBaudRate))
+            //{
+                OsrConnectionSettings settings = OnRequestOsrConnectionSettings(new OsrConnectionSettings
+                {
+                    ComPort = OsrConnectionSettings.DefaultComPort,
+                    BaudRate = OsrConnectionSettings.DefaultBaudRate
+                });
+
+                if (settings == null) {
+                    return;
+                }
+
+                Settings.OsrComPort = settings.ComPort;
+                Settings.OsrBaudRate = settings.BaudRate;
+            //}
+
+            OsrSerial controller = _controllers.OfType<OsrSerial>().Single();
+            controller.ComPort = Settings.OsrComPort;
+            controller.BaudRate = Settings.OsrBaudRate;
             controller.Start();
         }
 

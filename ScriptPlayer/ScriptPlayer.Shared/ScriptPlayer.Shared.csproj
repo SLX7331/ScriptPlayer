@@ -241,6 +241,9 @@
     <Compile Include="Devices\CommandConverter.cs" />
     <Compile Include="Devices\DeviceCommandInformation.cs" />
     <Compile Include="Devices\DeviceController.cs" />
+    <Compile Include="Devices\OsrSerial.cs" />
+    <Compile Include="Devices\Osr.cs" />
+    <Compile Include="Devices\OsrConnectionSettings.cs" />
     <Compile Include="Dialogs\BeatPatternEditor.xaml.cs">
       <DependentUpon>BeatPatternEditor.xaml</DependentUpon>
     </Compile>

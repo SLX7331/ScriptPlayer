@@ -68,6 +68,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
@@ -105,6 +106,12 @@
     </Compile>
     <Compile Include="Converters\AlternativeValueConverter.cs" />
     <Compile Include="Converters\InverterConverter.cs" />
+    <Compile Include="Dialogs\ButtplugConnectionSettingsDialog.xaml.cs">
+      <DependentUpon>ButtplugConnectionSettingsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\OsrConnectionSettingsDialog.xaml.cs">
+      <DependentUpon>OsrConnectionSettingsDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\DependecyObjectExtensions.cs" />
     <Compile Include="Dialogs\GeneratorSettingsDialog.xaml.cs">
       <DependentUpon>GeneratorSettingsDialog.xaml</DependentUpon>
@@ -207,9 +214,6 @@
     <Compile Include="Converters\DistinctValueToBooleanConverter.cs" />
     <Compile Include="Converters\TimeLeftConverter.cs" />
     <Compile Include="Converters\TimeSpanToMillisecondsConverter.cs" />
-    <Compile Include="Dialogs\ButtplugConnectionSettingsDialog.xaml.cs">
-      <DependentUpon>ButtplugConnectionSettingsDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\DeviceManagerDialog.xaml.cs">
       <DependentUpon>DeviceManagerDialog.xaml</DependentUpon>
     </Compile>
@@ -252,8 +256,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\ButtplugConnectionSettingsDialog.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\GeneratorProgressDialog.xaml">
       <SubType>Designer</SubType>
@@ -306,6 +310,10 @@
     <Page Include="Dialogs\TimeShiftDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\OsrConnectionSettingsDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\ZoomPlayerConnectionSettingsDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
