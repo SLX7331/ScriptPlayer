@@ -2459,7 +2459,7 @@ namespace ScriptPlayer.ViewModels
             ConnectOsrDirectlyCommand = new ScriptplayerCommand(ConnectOsrDirectly)
             {
                 CommandId = "ConnectOsrDirectly",
-                DisplayText = "Connect OSR Directly"
+                DisplayText = "Connect T-Code Directly"
             };
 
             ConnectButtplugCommand = new ScriptplayerCommand(ConnectButtplug)

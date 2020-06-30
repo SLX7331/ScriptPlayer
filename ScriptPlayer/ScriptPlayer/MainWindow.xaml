@@ -464,7 +464,7 @@
                     </MenuItem>
                     <MenuItem Command="{Binding ConnectOsrDirectlyCommand}" IsEnabled="{Binding CanDirectConnectOsr}" ToolTipService.ShowOnDisabled="True">
                         <MenuItem.Header>
-                            <TextBlock Text="Connect OSR directly">
+                            <TextBlock Text="Connect T-Code directly">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
